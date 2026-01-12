@@ -17,6 +17,9 @@ class StorageManager {
   static const String _keyWantsFriend = 'wantsFriend';
   static const String _keyFriendInfo = 'friendInfo';
   static const String _keySelectedMicroHabits = 'selectedMicroHabits';
+  // Persona keys
+  static const String _keyPrimaryGoal = 'primaryGoal';
+  static const String _keyPlayStyle = 'playStyle';
 
   /// Initialize SharedPreferences instance
   /// This MUST be called before using any storage methods
@@ -161,6 +164,36 @@ class StorageManager {
   /// Get selected micro habits
   static List<String>? getSelectedMicroHabits() {
     return instance.getStringList(_keySelectedMicroHabits);
+  }
+
+  // ==================== Persona Data ====================
+
+  /// Save user persona data (from onboarding)
+  static Future<void> setUserPersona({
+    required String name,
+    required String primaryGoal,
+    required String motivation,
+    required String playStyle,
+  }) async {
+    await setUserName(name);
+    await instance.setString(_keyPrimaryGoal, primaryGoal);
+    await setMotivationSource(motivation);
+    await instance.setString(_keyPlayStyle, playStyle);
+  }
+
+  /// Get primary goal
+  static String? getPrimaryGoal() {
+    return instance.getString(_keyPrimaryGoal);
+  }
+
+  /// Get play style
+  static String? getPlayStyle() {
+    return instance.getString(_keyPlayStyle);
+  }
+
+  /// Alias for setOnboardingCompleted for consistency
+  static Future<bool> setOnboardingComplete(bool complete) async {
+    return await setOnboardingCompleted(complete);
   }
 
   // ==================== Utility Methods ====================

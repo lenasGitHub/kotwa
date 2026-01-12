@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'core/constants/app_colors.dart';
 import 'core/storage/storage_manager.dart';
-import 'features/home/presentation/screens/home_screen.dart';
+import 'features/splash/presentation/screens/splash_screen.dart';
 import 'package:easy_localization/easy_localization.dart';
 
 /// Main entry point - Initialize storage before running app
@@ -30,11 +30,6 @@ class HabitChallengeApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Check if language is already selected
-    final savedLanguage = StorageManager.getLanguage();
-    final isRTL = StorageManager.getIsRTL();
-    // final hasLanguage = StorageManager.containsKey('language');
-
     return MaterialApp(
       title: 'تحدي العادات',
       debugShowCheckedModeBanner: false,
@@ -52,11 +47,8 @@ class HabitChallengeApp extends StatelessWidget {
         textTheme: GoogleFonts.cairoTextTheme(),
         useMaterial3: true,
       ),
-      // Navigate directly to HomeScreen
-      home: HomeScreen(language: savedLanguage, isRTL: isRTL),
-      //  home: hasLanguage
-      // ? WelcomeScreen(language: savedLanguage, isRTL: isRTL)
-      // : const LanguageSelectionScreen(),
+      // Start from SplashScreen for auth-based navigation
+      home: const SplashScreen(),
     );
   }
 }

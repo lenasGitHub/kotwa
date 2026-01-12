@@ -1,546 +1,272 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
+import 'dart:ui';
+import '../../../../game/data/mock_game_repository.dart';
+import '../../../../game/domain/models/game_models.dart';
 
-class JourneyScreen extends StatelessWidget {
+class JourneyScreen extends StatefulWidget {
   const JourneyScreen({super.key});
 
   @override
+  State<JourneyScreen> createState() => _JourneyScreenState();
+}
+
+class _JourneyScreenState extends State<JourneyScreen> {
+  late GameChallenge challenge;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load mock data for the "Walk to Mecca" challenge
+    challenge = MockGameRepository.getMeccaChallenge();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    // Define the path height based on design requirements
+    const double pathHeight = 5000.0;
+
     return Scaffold(
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [
-              Color(0xFFF5F5F5), // Light gray/white at top
-              Color(0xFFD4F4DD), // Mint green at bottom
-            ],
-            stops: [0.0, 0.4],
+            colors: _getBiomeColors(challenge.biome),
           ),
         ),
-        child: Stack(
-          children: [
-            // Main scrollable content - Reversed to scroll from bottom to top
-            SingleChildScrollView(
-              reverse: true, // Scroll from bottom to top
-              physics: const BouncingScrollPhysics(),
-              child: Column(
-                children: [
-                  const SizedBox(height: 120), // Space for bottom icons
-                  // Journey Path - Extended for infinite scroll
-                  SizedBox(
-                    height: 5000, // Much longer height for continuous scrolling
-                    child: CustomPaint(
-                      painter: JourneyPathPainter(),
-                      child: Stack(
-                        children: [
-                          // Top Dollar Icon
-                          Positioned(
-                            top: 50,
-                            left: MediaQuery.of(context).size.width / 2 - 30,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.attach_money,
-                                color: Colors.white,
-                                size: 32,
-                              ),
-                            ),
-                          ),
+        child: SingleChildScrollView(
+          reverse: true, // Start at the bottom (start of the journey)
+          physics: const BouncingScrollPhysics(),
+          child: SizedBox(
+            height: pathHeight,
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final width = constraints.maxWidth;
+                final path = JourneyPathUtils.generatePath(
+                  Size(width, pathHeight),
+                );
 
-                          // Nivel 400 - with avatars
-                          Positioned(
-                            top: 180,
-                            right: 80,
-                            child: Column(
-                              children: [
-                                // Avatars
-                                SizedBox(
-                                  width: 80,
-                                  height: 40,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        child: _buildAvatar(
-                                          'https://i.pravatar.cc/100?img=1',
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 20,
-                                        child: _buildAvatar(
-                                          'https://i.pravatar.cc/100?img=2',
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 40,
-                                        child: _buildAvatar(
-                                          'https://i.pravatar.cc/100?img=3',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                // Nivel badge
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Nivel 400',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: const Color(0xFF1A1A1A),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      const Icon(
-                                        Icons.filter_vintage,
-                                        size: 16,
-                                        color: Color(0xFF26F05F),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // 96 Badge
-                          Positioned(
-                            top: 320,
-                            left: 40,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: BoxDecoration(
-                                color: Colors.grey.shade400,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '96',
-                                  style: GoogleFonts.inter(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-
-                          // 450 Badge
-                          Positioned(
-                            top: 380,
-                            left: 30,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 8,
-                              ),
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF1A1A1A),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '450',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  const Icon(
-                                    Icons.filter_vintage,
-                                    size: 18,
-                                    color: Color(0xFF26F05F),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // User Avatar - positioned on path
-                          Positioned(
-                            top: 500,
-                            right: 60,
-                            child: Stack(
-                              alignment: Alignment.center,
-                              children: [
-                                // Green ring
-                                Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    color: const Color(
-                                      0xFF26F05F,
-                                    ).withOpacity(0.2),
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                                // Avatar
-                                Container(
-                                  width: 80,
-                                  height: 80,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF26F05F),
-                                      width: 4,
-                                    ),
-                                    image: const DecorationImage(
-                                      image: NetworkImage(
-                                        'https://i.pravatar.cc/150?img=68',
-                                      ),
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                                // +1 badge
-                                Positioned(
-                                  top: 0,
-                                  right: 0,
-                                  child: Container(
-                                    width: 32,
-                                    height: 32,
-                                    decoration: const BoxDecoration(
-                                      color: Color(0xFF26F05F),
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Center(
-                                      child: Text(
-                                        '+1',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 12,
-                                          fontWeight: FontWeight.w700,
-                                          color: Colors.white,
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-
-                          // 200 Badge
-                          Positioned(
-                            top: 620,
-                            right: 100,
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 6,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    '200',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF1A1A1A),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 6),
-                                  const Icon(
-                                    Icons.filter_vintage,
-                                    size: 16,
-                                    color: Color(0xFF26F05F),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // Pink Heart Icon
-                          Positioned(
-                            top: 750,
-                            right: 40,
-                            child: Container(
-                              width: 60,
-                              height: 60,
-                              decoration: const BoxDecoration(
-                                color: Color(0xFFFF80EA),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.favorite,
-                                color: Colors.white,
-                                size: 32,
-                              ),
-                            ),
-                          ),
-
-                          // Nivel 100 - with avatars
-                          Positioned(
-                            top: 900,
-                            left: 80,
-                            child: Column(
-                              children: [
-                                // Avatars
-                                SizedBox(
-                                  width: 60,
-                                  height: 40,
-                                  child: Stack(
-                                    children: [
-                                      Positioned(
-                                        left: 0,
-                                        child: _buildAvatar(
-                                          'https://i.pravatar.cc/100?img=4',
-                                        ),
-                                      ),
-                                      Positioned(
-                                        left: 20,
-                                        child: _buildAvatar(
-                                          'https://i.pravatar.cc/100?img=5',
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                // Nivel badge
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 12,
-                                    vertical: 6,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(20),
-                                  ),
-                                  child: Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        'Nivel 100',
-                                        style: GoogleFonts.inter(
-                                          fontSize: 14,
-                                          fontWeight: FontWeight.w700,
-                                          color: const Color(0xFF1A1A1A),
-                                        ),
-                                      ),
-                                      const SizedBox(width: 6),
-                                      const Icon(
-                                        Icons.filter_vintage,
-                                        size: 16,
-                                        color: Color(0xFF26F05F),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                return Stack(
+                  children: [
+                    // 1. The Winding Path
+                    Positioned.fill(
+                      child: CustomPaint(
+                        painter: JourneyPathPainter(
+                          path: path,
+                          progress: challenge.teamProgress,
+                          biome: challenge.biome,
+                        ),
                       ),
+                    ),
+
+                    // 2. Dynamic Milestones (Levels)
+                    ..._buildMilestones(path, pathHeight),
+
+                    // 3. Floating Avatars (Participants)
+                    ...challenge.participants.map((participant) {
+                      return _buildAvatarMarker(context, path, participant);
+                    }),
+
+                    // 4. Header Overlay
+                    Positioned(
+                      top: 0,
+                      left: 0,
+                      right: 0,
+                      child: _buildHeader(context),
+                    ),
+
+                    // 5. Floating Controls
+                    Positioned(
+                      bottom: 40,
+                      right: 20,
+                      child: FloatingActionButton(
+                        backgroundColor: Colors.white,
+                        child: const Icon(
+                          Icons.my_location,
+                          color: Colors.black,
+                        ),
+                        onPressed: () {
+                          // TODO: Scroll to user
+                        },
+                      ),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  List<Color> _getBiomeColors(BiomeType biome) {
+    switch (biome) {
+      case BiomeType.desert:
+        return [const Color(0xFFFFF8E1), const Color(0xFFFFD54F)]; // Sand
+      case BiomeType.forest:
+        return [const Color(0xFFF1F8E9), const Color(0xFFAED581)]; // Green
+      case BiomeType.ocean:
+        return [const Color(0xFFE1F5FE), const Color(0xFF4FC3F7)]; // Blue
+      case BiomeType.mountain:
+        return [const Color(0xFFF5F5F5), const Color(0xFF90A4AE)]; // Gray
+    }
+  }
+
+  Widget _buildAvatarMarker(
+    BuildContext context,
+    Path path,
+    ParticipantProgress participant,
+  ) {
+    // Calculate position on path based on progress (0.0 to 1.0)
+    final metrics = path.computeMetrics().first;
+    // Reverse logic: 0% is at the bottom (end of path buffer), 100% is at top (start of buffer)?
+    // Usually "start" is bottom for scrolling apps.
+    // Let's assume Path is drawn Top->Bottom.
+    // 0% Progress = Bottom of Screen (Length of Path)
+    // 100% Progress = Top of Screen (0)
+
+    final distance = metrics.length * (1 - participant.progress);
+    final tangent = metrics.getTangentForOffset(distance);
+
+    if (tangent == null) return const SizedBox.shrink();
+
+    return Positioned(
+      left: tangent.position.dx - 24, // Center the 48px avatar
+      top: tangent.position.dy - 60, // Place atop the point
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // Name Label
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                const BoxShadow(
+                  color: Colors.black12,
+                  blurRadius: 4,
+                  offset: Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              participant.user.displayName,
+              style: GoogleFonts.inter(
+                fontSize: 10,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+          const SizedBox(height: 4),
+          // Avatar
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(color: Colors.white, width: 2),
+              boxShadow: const [
+                BoxShadow(
+                  color: Colors.black26,
+                  blurRadius: 8,
+                  offset: Offset(0, 4),
+                ),
+              ],
+              image: DecorationImage(
+                image: NetworkImage(participant.user.avatarUrl),
+                fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          // Triangle Pointer
+          ClipPath(
+            clipper: TriangleClipper(),
+            child: Container(width: 10, height: 8, color: Colors.white),
+          ),
+        ],
+      ),
+    );
+  }
+
+  List<Widget> _buildMilestones(Path path, double totalHeight) {
+    final metrics = path.computeMetrics().first;
+    List<Widget> milestones = [];
+
+    // Create 5 milestones
+    for (int i = 1; i <= 5; i++) {
+      final percent = i / 6; // Spread them out
+      final distance = metrics.length * percent;
+      final tangent = metrics.getTangentForOffset(distance);
+
+      if (tangent != null) {
+        milestones.add(
+          Positioned(
+            left: tangent.position.dx + 20, // Offset to side of path
+            top: tangent.position.dy,
+            child: Container(
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.9),
+                borderRadius: BorderRadius.circular(16),
+                border: Border.all(color: Colors.grey.shade300),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.flag, size: 16, color: Colors.orange),
+                  const SizedBox(width: 4),
+                  Text(
+                    "Km ${((1 - percent) * 1500).toInt()}",
+                    style: GoogleFonts.inter(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 12,
                     ),
                   ),
                 ],
               ),
             ),
+          ),
+        );
+      }
+    }
+    return milestones;
+  }
 
-            // Header - New compact design
-            Positioned(
-              top: 0,
-              left: 0,
-              right: 0,
-              child: SafeArea(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
-                    ),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(50),
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.08),
-                          blurRadius: 20,
-                          offset: const Offset(0, 4),
-                        ),
-                      ],
-                    ),
-                    child: Row(
-                      children: [
-                        // Avatar
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            image: const DecorationImage(
-                              image: NetworkImage(
-                                'https://i.pravatar.cc/100?img=68',
-                              ),
-                              fit: BoxFit.cover,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-
-                        // Stats Row
-                        Expanded(
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              // Butterfly stat
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.filter_vintage,
-                                    color: Color(0xFF26F05F),
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '260/300',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF1A1A1A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              // Heart stat
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.favorite,
-                                    color: Color(0xFFFF80EA),
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '18',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF1A1A1A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-
-                              // Shield stat
-                              Row(
-                                children: [
-                                  const Icon(
-                                    Icons.security,
-                                    color: Color(0xFF40E0D0),
-                                    size: 24,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    '\$ 1.2M',
-                                    style: GoogleFonts.inter(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w700,
-                                      color: const Color(0xFF1A1A1A),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        const SizedBox(width: 8),
-
-                        // Hamburger menu
-                        const Icon(
-                          Icons.menu,
-                          size: 28,
-                          color: Color(0xFF1A1A1A),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+  Widget _buildHeader(BuildContext context) {
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            GestureDetector(
+              onTap: () => Navigator.pop(context),
+              child: const CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(Icons.arrow_back, color: Colors.black),
               ),
             ),
-
-            // Bottom left backpack icon
-            Positioned(
-              bottom: 30,
-              left: 30,
-              child: Container(
-                width: 60,
-                height: 60,
-                decoration: const BoxDecoration(
-                  color: Color(0xFF26F05F),
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.backpack,
-                  color: Colors.white,
-                  size: 32,
-                ),
+            const Spacer(),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20),
+                boxShadow: [
+                  const BoxShadow(color: Colors.black12, blurRadius: 10),
+                ],
               ),
-            ),
-
-            // Bottom right compass icon
-            Positioned(
-              bottom: 30,
-              right: 30,
-              child: GestureDetector(
-                onTap: () => Navigator.pop(context),
-                child: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.circle,
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black26,
-                        blurRadius: 10,
-                        offset: Offset(0, 4),
-                      ),
-                    ],
+              child: Row(
+                children: [
+                  const Icon(Icons.groups, color: Colors.orange),
+                  const SizedBox(width: 8),
+                  Text(
+                    "Team: ${(challenge.teamProgress * 100).toStringAsFixed(1)}%",
+                    style: GoogleFonts.inter(fontWeight: FontWeight.bold),
                   ),
-                  child: const Icon(
-                    Icons.explore,
-                    color: Color(0xFF1A1A1A),
-                    size: 32,
-                  ),
-                ),
+                ],
               ),
             ),
           ],
@@ -548,143 +274,113 @@ class JourneyScreen extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _buildAvatar(String imageUrl) {
-    return Container(
-      width: 40,
-      height: 40,
-      decoration: BoxDecoration(
-        shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
-        image: DecorationImage(
-          image: NetworkImage(imageUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
-    );
+class JourneyPathUtils {
+  static Path generatePath(Size size) {
+    final path = Path();
+    // Start from top center (but conceptually the END of the journey in a reverse scroll)
+    // We will draw from Top to Bottom.
+    path.moveTo(size.width / 2, 0);
+
+    // Create organic winding path
+    // We break the height into segments
+    double currentY = 0;
+    bool isRight = true;
+
+    while (currentY < size.height) {
+      final nextY = currentY + 400;
+      final controlX = isRight ? size.width * 0.9 : size.width * 0.1;
+      final endX = size.width / 2; // Return to center? Or zig zag?
+      // Let's zig zag
+      final targetX = isRight ? size.width * 0.75 : size.width * 0.25;
+
+      // Quadratic bezier for simple storage
+      path.quadraticBezierTo(controlX, currentY + 200, targetX, nextY);
+
+      currentY = nextY;
+      isRight = !isRight;
+    }
+    return path;
   }
 }
 
-// Custom painter for the winding path
 class JourneyPathPainter extends CustomPainter {
+  final Path path;
+  final double progress;
+  final BiomeType biome;
+
+  JourneyPathPainter({
+    required this.path,
+    required this.progress,
+    required this.biome,
+  });
+
   @override
   void paint(Canvas canvas, Size size) {
-    // Paint for the active (completed) section background
-    final activeBgPaint = Paint()
-      ..color = const Color(0xFF26F05F).withOpacity(0.15)
-      ..strokeWidth = 30
+    // 1. Draw the "Dirt" Path (Background)
+    final bgPaint = Paint()
+      ..color = Colors.white.withOpacity(0.5)
       ..style = PaintingStyle.stroke
+      ..strokeWidth = 40
       ..strokeCap = StrokeCap.round;
 
-    // Paint for active (green) dashed line
-    final activeDashedPaint = Paint()
-      ..color = const Color(0xFF26F05F)
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
+    canvas.drawPath(path, bgPaint);
 
-    // Paint for inactive (gray) dashed line
-    final inactiveDashedPaint = Paint()
-      ..color = Colors.grey.shade400
-      ..strokeWidth = 3
-      ..style = PaintingStyle.stroke;
-
-    final path = Path();
-
-    // Start from top center
-    path.moveTo(size.width / 2, 50);
-
-    // Create winding path
-    path.quadraticBezierTo(size.width * 0.8, 150, size.width * 0.7, 250);
-
-    path.quadraticBezierTo(size.width * 0.5, 350, size.width * 0.3, 450);
-
-    path.quadraticBezierTo(size.width * 0.1, 550, size.width * 0.6, 650);
-
-    path.quadraticBezierTo(size.width * 0.9, 750, size.width * 0.7, 850);
-
-    path.quadraticBezierTo(size.width * 0.4, 950, size.width * 0.3, 1050);
-
-    // Continue the path further down
-    path.quadraticBezierTo(size.width * 0.2, 1150, size.width * 0.6, 1250);
-
-    path.quadraticBezierTo(size.width * 0.8, 1350, size.width * 0.5, 1450);
-
-    path.quadraticBezierTo(size.width * 0.3, 1550, size.width * 0.7, 1650);
-
-    path.quadraticBezierTo(size.width * 0.9, 1750, size.width * 0.4, 1850);
-
-    path.quadraticBezierTo(size.width * 0.2, 1950, size.width * 0.6, 2050);
-
-    path.quadraticBezierTo(size.width * 0.8, 2150, size.width * 0.3, 2250);
-
-    path.quadraticBezierTo(size.width * 0.1, 2350, size.width * 0.7, 2450);
-
-    path.quadraticBezierTo(size.width * 0.9, 2550, size.width * 0.5, 2650);
-
-    path.quadraticBezierTo(size.width * 0.3, 2750, size.width * 0.6, 2850);
-
-    path.quadraticBezierTo(size.width * 0.8, 2950, size.width * 0.4, 3050);
-
-    path.quadraticBezierTo(size.width * 0.2, 3150, size.width * 0.7, 3250);
-
-    path.quadraticBezierTo(size.width * 0.9, 3350, size.width * 0.3, 3450);
-
-    path.quadraticBezierTo(size.width * 0.1, 3550, size.width * 0.6, 3650);
-
-    path.quadraticBezierTo(size.width * 0.8, 3750, size.width * 0.5, 3850);
-
-    path.quadraticBezierTo(size.width * 0.3, 3950, size.width * 0.7, 4050);
-
-    path.quadraticBezierTo(size.width * 0.9, 4150, size.width * 0.4, 4250);
-
-    path.quadraticBezierTo(size.width * 0.2, 4350, size.width * 0.6, 4450);
-
-    path.quadraticBezierTo(size.width * 0.8, 4550, size.width * 0.5, 4650);
-
-    path.quadraticBezierTo(size.width * 0.3, 4750, size.width * 0.5, 4850);
-
-    // Calculate the active portion (e.g., 60% completed)
+    // 2. Draw the Progress Line (Colored)
+    // Calculate length based on progress.
+    // Remember: Scroll is Reversed. Bottom is Start. Top is Finish.
+    // If progress is 0.1 (10%), we start from Bottom and go up 10%.
     final metrics = path.computeMetrics().first;
-    final activeLength = metrics.length * 0.6; // 60% of the path is active
+    // Start index = total_length
+    // End index = total_length * (1 - progress)
+    final startOffset = metrics.length; // Bottom
+    final endOffset = metrics.length * (1 - progress); // Further up
 
-    // Extract active and inactive paths
-    final activePath = metrics.extractPath(0, activeLength);
-    final inactivePath = metrics.extractPath(activeLength, metrics.length);
+    // PathMetrics doesn't easily extract "from end to middle".
+    // We should extract the sub-path.
+    // Actually, let's just draw the active part which is from "Current Pos" to "Bottom".
+    final activePath = metrics.extractPath(endOffset, startOffset);
 
-    // Draw active section with green background
-    canvas.drawPath(activePath, activeBgPaint);
+    final activePaint = Paint()
+      ..color = _getBiomeMainColor(biome)
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 12
+      ..strokeCap = StrokeCap.round;
 
-    // Draw active section with green dashed line
-    _drawDashedPath(canvas, activePath, activeDashedPaint);
+    canvas.drawPath(activePath, activePaint);
 
-    // Draw inactive section with gray dashed line
-    _drawDashedPath(canvas, inactivePath, inactiveDashedPaint);
+    // 3. Draw Dashed Center Line
+    // ... (optional polish)
   }
 
-  void _drawDashedPath(Canvas canvas, Path path, Paint paint) {
-    const dashWidth = 10.0;
-    const dashSpace = 8.0;
-
-    final metrics = path.computeMetrics();
-    for (final metric in metrics) {
-      double distance = 0.0;
-      bool draw = true;
-
-      while (distance < metric.length) {
-        final length = draw ? dashWidth : dashSpace;
-        final end = math.min(distance + length, metric.length);
-
-        if (draw) {
-          final extractPath = metric.extractPath(distance, end);
-          canvas.drawPath(extractPath, paint);
-        }
-
-        distance = end;
-        draw = !draw;
-      }
+  Color _getBiomeMainColor(BiomeType biome) {
+    switch (biome) {
+      case BiomeType.desert:
+        return Colors.orange;
+      case BiomeType.forest:
+        return const Color(0xFF26F05F);
+      case BiomeType.ocean:
+        return Colors.blue;
+      case BiomeType.mountain:
+        return Colors.purple;
     }
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+}
+
+class TriangleClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(size.width / 2, size.height);
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(covariant CustomClipper<Path> oldClipper) => false;
 }

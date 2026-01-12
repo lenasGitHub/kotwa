@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:habit_tracker_challenge/core/constants/app_colors.dart';
 import 'package:easy_localization/easy_localization.dart';
-import 'package:habit_tracker_challenge/features/auth/presentation/screens/registration_screen.dart';
+import 'onboarding_persona_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   final String language;
@@ -333,7 +333,7 @@ class _WelcomeScreenState extends State<WelcomeScreen>
         onPressed: () {
           Navigator.of(context).pushReplacement(
             MaterialPageRoute(
-              builder: (context) => RegistrationScreen(
+              builder: (context) => OnboardingPersonaScreen(
                 language: widget.language,
                 isRTL: widget.isRTL,
               ),
