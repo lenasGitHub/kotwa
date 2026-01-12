@@ -1,0 +1,50 @@
+{
+    "app": {
+        "name": "تحدي العادات"
+    },
+    "welcome_screen": {
+        "title": "ابدأ رحلتك نحو\nحياة أفضل",
+        "subtitle": "بناء عادات إيجابية في 7 أيام فقط",
+        "continue_button": "متابعة"
+    },
+    "home_screen": {
+        "discover": "اكتشف",
+        "library": "المكتبة",
+        "repetition": "التكرار",
+        "profile": "الملف الشخصي",
+        "start_reading_streak": "ابدأ سلسلة القراءة الخاصة بك!",
+        "mark_day_1": "20 دقيقة لتحديد اليوم 1",
+        "challenges": "التحديات",
+        "success": "نجاح",
+        "challenge_28_day": "تحدي 28 يوم",
+        "family": "عائلة",
+        "challenge_14_day": "تحدي 14 يوم",
+        "collections": "المجموعات",
+        "war_in": "الحرب في...",
+        "book_lottery": "يانصيب الكتاب",
+        "tap_random_read": "اضغط للقراءة العشوائية",
+        "modern": "حديث",
+        "classics": "الكلاسيكيات",
+        "best_books": "أفضل الكتب"
+    },
+    "registration_screen": {
+        "start_journey": "ابدأ رحلتك نحو حياة أفضل",
+        "register_now": "سجل الآن وخلينا نساعدك تبني عادات إيجابية في 7 أيام فقط",
+        "email_signup": "التسجيل بالبريد الإلكتروني",
+        "google_signup": "المتابعة بـ Google",
+        "apple_signup": "المتابعة بـ Apple",
+        "have_account": "لديك حساب بالفعل؟ ",
+        "login": "تسجيل الدخول",
+        "skip_registration": "تخطي التسجيل والبدء كضيف",
+        "skip_note": "(بعض الميزات مثل تحديات الأصدقاء تتطلب التسجيل)",
+        "full_name": "الاسم الكامل",
+        "email": "البريد الإلكتروني",
+        "password": "كلمة المرور",
+        "confirm_password": "تأكيد كلمة المرور",
+        "create_account": "إنشاء حساب",
+        "field_required": "هذا الحقل مطلوب",
+        "login_title": "تسجيل الدخول",
+        "login_under_development": "صفحة تسجيل الدخول قيد التطوير",
+        "ok": "حسناً"
+    }
+}

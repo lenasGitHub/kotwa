@@ -1,0 +1,50 @@
+{
+    "app": {
+        "name": "Habit Challenge"
+    },
+    "welcome_screen": {
+        "title": "Start your journey\nto a better life",
+        "subtitle": "Build positive habits in just 7 days",
+        "continue_button": "Continue"
+    },
+    "home_screen": {
+        "discover": "Discover",
+        "library": "Library",
+        "repetition": "Repetition",
+        "profile": "Profile",
+        "start_reading_streak": "Start your reading streak!",
+        "mark_day_1": "20 min to\nmark day 1",
+        "challenges": "Challenges",
+        "success": "Success",
+        "challenge_28_day": "28-day challenge",
+        "family": "Family",
+        "challenge_14_day": "14-day challenge",
+        "collections": "Collections",
+        "war_in": "War in...",
+        "book_lottery": "Book lottery",
+        "tap_random_read": "Tap for a random read",
+        "modern": "Modern",
+        "classics": "Classics",
+        "best_books": "Best books"
+    },
+    "registration_screen": {
+        "start_journey": "Start your journey to a better life",
+        "register_now": "Sign up now and let us help you build positive habits in just 7 days",
+        "email_signup": "Sign up with Email",
+        "google_signup": "Continue with Google",
+        "apple_signup": "Continue with Apple",
+        "have_account": "Already have an account? ",
+        "login": "Login",
+        "skip_registration": "Skip registration and start as guest",
+        "skip_note": "(Some features like friend challenges require registration)",
+        "full_name": "Full Name",
+        "email": "Email",
+        "password": "Password",
+        "confirm_password": "Confirm Password",
+        "create_account": "Create Account",
+        "field_required": "This field is required",
+        "login_title": "Login",
+        "login_under_development": "Login page is under development",
+        "ok": "OK"
+    }
+}
