@@ -15,6 +15,7 @@ A beautiful habit tracking app with Arabic RTL support and English language opti
 ```
 lib/
 ├── core/
+
 │   ├── constants/
 │   │   ├── app_colors.dart       # Color constants
 │   │   └── app_strings.dart      # String constants (AR/EN)
