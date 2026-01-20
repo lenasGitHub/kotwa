@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import '../../widgets/organic_field_widget.dart';
 import '../../providers/home_provider.dart';
+import 'package:habit_tracker_challenge/features/challenges/presentation/screens/challenge_list_screen.dart';
+import '../../../../challenges/presentation/screens/my_land_screen.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -23,6 +25,7 @@ class _MainScreenState extends State<MainScreen> {
 
   // Map Controller
   late TransformationController _transformationController;
+  final GlobalKey _myLandKey = GlobalKey();
 
   @override
   void initState() {
@@ -32,20 +35,30 @@ class _MainScreenState extends State<MainScreen> {
 
     _transformationController = TransformationController();
 
-    // Set initial position to center after first frame
+    // Set initial position to center "My Land" after first frame
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final screenWidth = MediaQuery.of(context).size.width;
-      final screenHeight = MediaQuery.of(context).size.height;
-
-      // Calculate center position
-      final canvasWidth = screenWidth * 4;
-      final canvasHeight = screenHeight * 4;
-
-      final x = -(canvasWidth - screenWidth) / 2;
-      final y = -(canvasHeight - screenHeight) / 2;
-
-      _transformationController.value = Matrix4.identity()..translate(x, y);
+      _centerOnMyLand();
     });
+  }
+
+  void _centerOnMyLand() {
+    final RenderBox? renderBox =
+        _myLandKey.currentContext?.findRenderObject() as RenderBox?;
+    if (renderBox == null) return;
+
+    final screenWidth = MediaQuery.of(context).size.width;
+    final screenHeight = MediaQuery.of(context).size.height;
+
+    // Canvas is 4x screen size. Center of canvas is (2W, 2H).
+    // "My Land" is likely near the center.
+    // To center (2W, 2H) on screen (0.5W, 0.5H) with Scale 1.0:
+    // Translation = ScreenCenter - ContentCenter = (0.5W, 0.5H) - (2W, 2H) = (-1.5W, -1.5H).
+
+    final matrix = Matrix4.identity()
+      ..translate(-screenWidth * 1.5, -screenHeight * 1.5)
+      ..scale(1.0); // Normal zoom
+
+    _transformationController.value = matrix;
   }
 
   @override
@@ -92,7 +105,7 @@ class _MainScreenState extends State<MainScreen> {
                     borderRadius: BorderRadius.circular(50),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.1),
+                        color: Colors.black.withValues(alpha: 0.1),
                         blurRadius: 15,
                         offset: const Offset(0, 4),
                       ),
@@ -215,153 +228,21 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
 
-          // 3. Map/List Toggle Header (Specific to Main Screen)
-          // Positioned(
-          //   top: 90,
-          //   left: 16,
-          //   right: 16,
-          //   child: Column(
-          //     mainAxisSize: MainAxisSize.min,
-          //     children: [
-          //       // Row 1: Map/List Toggle + Search
-          //       Row(
-          //         children: [
-          //           // Map/List Toggle
-          //           Container(
-          //             height: 56,
-          //             decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               borderRadius: BorderRadius.circular(28),
-          //               boxShadow: [
-          //                 BoxShadow(
-          //                   color: Colors.black.withOpacity(0.1),
-          //                   blurRadius: 10,
-          //                   offset: const Offset(0, 2),
-          //                 ),
-          //               ],
-          //             ),
-          //             child: Row(
-          //               mainAxisSize: MainAxisSize.min,
-          //               children: [
-          //                 // Map Button
-          //                 GestureDetector(
-          //                   onTap: () => setState(() => _isMapView = true),
-          //                   child: Container(
-          //                     padding: const EdgeInsets.symmetric(
-          //                       horizontal: 24,
-          //                       vertical: 12,
-          //                     ),
-          //                     decoration: BoxDecoration(
-          //                       color: _isMapView
-          //                           ? const Color(0xFF1A2C2C)
-          //                           : Colors.transparent,
-          //                       borderRadius: BorderRadius.circular(28),
-          //                     ),
-          //                     child: Row(
-          //                       children: [
-          //                         Icon(
-          //                           Icons.map_outlined,
-          //                           color: _isMapView
-          //                               ? Colors.white
-          //                               : const Color(0xFF1A2C2C),
-          //                           size: 20,
-          //                         ),
-          //                         const SizedBox(width: 8),
-          //                         Text(
-          //                           'Map',
-          //                           style: GoogleFonts.cairo(
-          //                             color: _isMapView
-          //                                 ? Colors.white
-          //                                 : const Color(0xFF1A2C2C),
-          //                             fontSize: 16,
-          //                             fontWeight: FontWeight.w600,
-          //                           ),
-          //                         ),
-          //                       ],
-          //                     ),
-          //                   ),
-          //                 ),
-          //                 // List Button
-          //                 GestureDetector(
-          //                   onTap: () => setState(() => _isMapView = false),
-          //                   child: Padding(
-          //                     padding: const EdgeInsets.symmetric(
-          //                       horizontal: 24,
-          //                       vertical: 12,
-          //                     ),
-          //                     child: Row(
-          //                       children: [
-          //                         Icon(
-          //                           Icons.view_list_rounded,
-          //                           color: !_isMapView
-          //                               ? Colors.white
-          //                               : const Color(0xFF1A2C2C),
-          //                           size: 20,
-          //                         ),
-          //                         const SizedBox(width: 8),
-          //                         Text(
-          //                           'List',
-          //                           style: GoogleFonts.cairo(
-          //                             color: !_isMapView
-          //                                 ? Colors.white
-          //                                 : const Color(0xFF1A2C2C),
-          //                             fontSize: 16,
-          //                             fontWeight: FontWeight.w600,
-          //                           ),
-          //                         ),
-          //                       ],
-          //                     ),
-          //                   ),
-          //                 ),
-          //               ],
-          //             ),
-          //           ),
-          //           const Spacer(),
-          //           // Search Button
-          //           Container(
-          //             width: 56,
-          //             height: 56,
-          //             decoration: BoxDecoration(
-          //               color: Colors.white,
-          //               shape: BoxShape.circle,
-          //               boxShadow: [
-          //                 BoxShadow(
-          //                   color: Colors.black.withOpacity(0.1),
-          //                   blurRadius: 10,
-          //                   offset: const Offset(0, 2),
-          //                 ),
-          //               ],
-          //             ),
-          //             child: const Icon(
-          //               Icons.search,
-          //               color: Color(0xFF1A2C2C),
-          //               size: 24,
-          //             ),
-          //           ),
-          //         ],
-          //       ),
-          //       const SizedBox(height: 12),
-          //       // Row 2: Filter Chips
-          //       SizedBox(
-          //         height: 36,
-          //         child: ListView(
-          //           scrollDirection: Axis.horizontal,
-          //           children: [
-          //             _buildFilterChip('Harvest Soon'),
-          //             const SizedBox(width: 8),
-          //             _buildFilterChip('Needs Watering'),
-          //             const SizedBox(width: 8),
-          //             _buildFilterChip('Potential Issues'),
-          //             const SizedBox(width: 8),
-          //             _buildFilterChip('Needs Watering'),
-          //             const SizedBox(width: 8),
-          //             _buildFilterChip('Potential Issues'),
-          //           ],
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
+          // 3. Recenter Button (Bottom Right)
+          if (_isMapView)
+            Positioned(
+              bottom: 100,
+              right: 20,
+              child: FloatingActionButton(
+                heroTag: 'recenter_map',
+                backgroundColor: Colors.white,
+                child: const Icon(
+                  Icons.center_focus_strong,
+                  color: Colors.black87,
+                ),
+                onPressed: _centerOnMyLand,
+              ),
+            ),
         ],
       ),
     );
@@ -370,55 +251,98 @@ class _MainScreenState extends State<MainScreen> {
   Widget _buildMapView(double screenWidth, double screenHeight) {
     return InteractiveViewer(
       transformationController: _transformationController,
-      boundaryMargin: const EdgeInsets.fromLTRB(40, 100, 40, 40),
-      minScale: 0.3,
-      maxScale: 0.3,
-      constrained: false,
-      panEnabled: true,
-      scaleEnabled: false,
-      alignment: Alignment.center,
+      boundaryMargin: const EdgeInsets.symmetric(
+        horizontal: 2000,
+        vertical: 2000,
+      ),
+      minScale: 0.1,
+      maxScale: 4.0,
+      constrained: false, // Allows the child to be infinite
       child: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(50.0), // Padding around the grid
         child: SizedBox(
           width: screenWidth * 4,
-          height: screenHeight * 4,
-          child: MasonryGridView.count(
-            crossAxisCount: 4,
-            mainAxisSpacing: 8,
-            crossAxisSpacing: 8,
-            itemCount: _fieldItems.length,
-            physics: const NeverScrollableScrollPhysics(),
-            itemBuilder: (context, index) {
-              final item = _fieldItems[index];
-              final isSelected = _selectedFields.contains(item.id);
 
-              return OrganicFieldWidget(
-                fieldItem: item,
-                isSelected: isSelected,
-                onTap: () {
-                  setState(() {
-                    if (_selectedFields.contains(item.id)) {
-                      _selectedFields.remove(item.id);
-                    } else {
-                      _selectedFields.add(item.id);
-                    }
-                  });
-                },
+          // Remove fixed height - let the grid determine it primarily, or keep it large if needed.
+          // StaggeredGrid needs a constrained width (provided by SizedBox) but height can be intrinsic.
+          // However, for InteractiveViewer, having a known size helps.
+          // Let's keep width constrained and allow height to flow or be large enough.
+          child: StaggeredGrid.count(
+            crossAxisCount: 6, // Increased column count for finer control
+            mainAxisSpacing: 20,
+            crossAxisSpacing: 20,
+            children: _fieldItems.map((item) {
+              final isSelected = _selectedFields.contains(item.id);
+              // Adjust cell count logic if we increased crossAxisCount from 4 to 6
+              // Old: 4 cols. New: 6 cols. 1.5x factor.
+
+              int crossCount = item.crossAxisCellCount;
+              int mainCount = item.mainAxisCellCount;
+
+              // Adjust for "My Land" - make it prominent
+              if (item.id == 999) {
+                return StaggeredGridTile.count(
+                  crossAxisCellCount: 4, // 4/6 width
+                  mainAxisCellCount: 3,
+                  child: OrganicFieldWidget(
+                    key: _myLandKey,
+                    fieldItem: item,
+                    isSelected: isSelected,
+                    onTap: () => _handleFieldTap(item),
+                  ),
+                );
+              }
+
+              // Adjust others mostly to 2 or 3 cols
+              return StaggeredGridTile.count(
+                crossAxisCellCount: crossCount == 2
+                    ? 3
+                    : (crossCount == 1 ? 2 : crossCount),
+                mainAxisCellCount: mainCount,
+                child: OrganicFieldWidget(
+                  fieldItem: item,
+                  isSelected: isSelected,
+                  onTap: () => _handleFieldTap(item),
+                ),
               );
-            },
+            }).toList(),
           ),
         ),
       ),
     );
   }
 
+  void _handleFieldTap(FieldItem item) {
+    if (item.id == 999) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MyLandScreen()),
+      );
+    } else if (item.category != null) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ChallengeListScreen(category: item.category!),
+        ),
+      );
+    } else {
+      setState(() {
+        if (_selectedFields.contains(item.id)) {
+          _selectedFields.remove(item.id);
+        } else {
+          _selectedFields.add(item.id);
+        }
+      });
+    }
+  }
+
   Widget _buildListView() {
     return Padding(
       padding: const EdgeInsets.only(
-        top: 160, // Space for header
+        top: 160,
         left: 16,
         right: 16,
-        bottom: 120, // Space for bottom nav
+        bottom: 120,
       ),
       child: ListView.builder(
         itemCount: _fieldItems.length,
@@ -440,7 +364,7 @@ class _MainScreenState extends State<MainScreen> {
               ),
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withOpacity(0.05),
+                  color: Colors.black.withValues(alpha: 0.05),
                   blurRadius: 10,
                   offset: const Offset(0, 2),
                 ),
@@ -458,12 +382,11 @@ class _MainScreenState extends State<MainScreen> {
               },
               child: Row(
                 children: [
-                  // Icon
                   Container(
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
-                      color: const Color(0xFF26F05F).withOpacity(0.15),
+                      color: const Color(0xFF26F05F).withValues(alpha: 0.15),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Icon(
@@ -473,7 +396,6 @@ class _MainScreenState extends State<MainScreen> {
                     ),
                   ),
                   const SizedBox(width: 16),
-                  // Title and Subtitle
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -498,88 +420,11 @@ class _MainScreenState extends State<MainScreen> {
                       ],
                     ),
                   ),
-                  // Pin indicators
-                  if (item.pins.isNotEmpty)
-                    Row(
-                      children: [
-                        ...item.pins
-                            .take(3)
-                            .map(
-                              (pin) => Padding(
-                                padding: const EdgeInsets.only(left: 4),
-                                child: Container(
-                                  width: 32,
-                                  height: 32,
-                                  decoration: BoxDecoration(
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: const Color(0xFF26F05F),
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: ClipOval(
-                                    child: Image.network(
-                                      'https://i.pravatar.cc/150?img=${pin.avatarIndex + 1}',
-                                      fit: BoxFit.cover,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                        if (item.pins.length > 3)
-                          Padding(
-                            padding: const EdgeInsets.only(left: 4),
-                            child: Container(
-                              width: 32,
-                              height: 32,
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: const Color(0xFF26F05F),
-                              ),
-                              child: Center(
-                                child: Text(
-                                  '+${item.pins.length - 3}',
-                                  style: GoogleFonts.inter(
-                                    color: Colors.white,
-                                    fontSize: 10,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
                 ],
               ),
             ),
           );
         },
-      ),
-    );
-  }
-
-  Widget _buildFilterChip(String label) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(22),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.08),
-            blurRadius: 8,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Text(
-        label,
-        style: GoogleFonts.inter(
-          color: const Color(0xFF1A1A1A),
-          fontSize: 14,
-          fontWeight: FontWeight.w600,
-        ),
       ),
     );
   }

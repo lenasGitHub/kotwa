@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'dart:math' as math;
-import 'dart:ui';
 import '../../../../game/data/mock_game_repository.dart';
 import '../../../../game/domain/models/game_models.dart';
 
@@ -291,7 +289,6 @@ class JourneyPathUtils {
     while (currentY < size.height) {
       final nextY = currentY + 400;
       final controlX = isRight ? size.width * 0.9 : size.width * 0.1;
-      final endX = size.width / 2; // Return to center? Or zig zag?
       // Let's zig zag
       final targetX = isRight ? size.width * 0.75 : size.width * 0.25;
 

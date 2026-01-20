@@ -2,32 +2,42 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:math' as math;
 import 'user_pin_widget.dart';
+import '../../../challenges/domain/models/tracking_type.dart';
 
 /// Data model for pin information
 class PinData {
-  final int avatarIndex;
+  final int? avatarIndex;
+  final String? odeName;
+  final String? avatarUrl;
+  final String? name;
 
-  PinData({required this.avatarIndex});
+  PinData({this.avatarIndex, this.odeName, this.avatarUrl, this.name});
 }
 
 /// Data model for each field item
 class FieldItem {
   final int id;
+  final ChallengeCategory? category;
   final int crossAxisCellCount; // Width in grid cells
   final int mainAxisCellCount; // Height in grid cells
   final String title;
   final String subtitle;
   final IconData? icon;
+  final Color? color;
   final List<PinData> pins; // List of pins for this field
+  final int participantCount;
 
   FieldItem({
     required this.id,
+    this.category,
     required this.crossAxisCellCount,
     required this.mainAxisCellCount,
     required this.title,
     required this.subtitle,
     required this.icon,
+    this.color,
     this.pins = const [],
+    this.participantCount = 0,
   });
 }
 
@@ -66,20 +76,24 @@ class OrganicFieldWidget extends StatelessWidget {
     //         bubbleGradients[fieldItem.id % bubbleGradients.length];
     // Generate greenish colors like reference image (pale mint/sage)
     final hue = 110 + random.nextDouble() * 20; // Greenish hues (110-130)
-    final defaultColor = HSLColor.fromAHSL(
+    final generatedColor = HSLColor.fromAHSL(
       1.0,
       hue,
       0.25, // Subtle saturation
       0.94, // Very light background
     ).toColor();
 
+    final defaultColor = fieldItem.color?.withOpacity(0.3) ?? generatedColor;
+
     // final selectedColor = const Color(0xFF8CDD9C); // Green when selected
-    final selectedColor = HSLColor.fromAHSL(
-      1.0,
-      120, // Pure Green when selected
-      0.60,
-      0.80,
-    ).toColor();
+    final selectedColor =
+        fieldItem.color?.withOpacity(0.6) ??
+        HSLColor.fromAHSL(
+          1.0,
+          120, // Pure Green when selected
+          0.60,
+          0.80,
+        ).toColor();
 
     final fillColor = isSelected ? selectedColor : defaultColor;
 
@@ -221,7 +235,7 @@ class OrganicFieldWidget extends StatelessWidget {
                 top: top,
                 left: left,
                 right: right,
-                child: UserPinWidget(avatarIndex: pin.avatarIndex),
+                child: UserPinWidget(avatarIndex: pin.avatarIndex ?? 0),
               );
             }),
           ],

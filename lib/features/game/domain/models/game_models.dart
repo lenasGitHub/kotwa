@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum ChallengeType {
   coop, // "Walk to Mecca" (Sum of all)
   threshold, // "Sugar Free" (Individual > 80%)
